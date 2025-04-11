@@ -1,13 +1,16 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Nathan Hogg / Section 002
  *
  *   This java file contains the problem solutions for the methods selectionSort,
  *   mergeSortDivisibleByKFirst, asteroidsDestroyed, and numRescueCanoes methods.
  *
  ********************************************************************/
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.PriorityQueue;
 
 public class ProblemSolutions {
 
@@ -37,10 +40,24 @@ public class ProblemSolutions {
         int n = values.length;
 
         for (int i = 0; i < n - 1; i++) {
+            int minIndex = i;
 
-            // YOU CODE GOES HERE -- COMPLETE THE INNER LOOP OF THIS
-            // "SELECTION SORT" ALGORITHM.
-            // DO NOT FORGET TO ADD YOUR NAME / SECTION ABOVE
+            for (int j = i; j < n; j++) {
+
+                if (ascending) {
+                    if (values[j] < values[minIndex]) {
+                        minIndex = j;
+                    }
+                } else {
+                    if (values[j] > values[minIndex]) {
+                        minIndex = j;
+                    }
+                }
+            }
+            int temp = values[i];
+            values[i] = values[minIndex];
+            values[minIndex] = temp;
+
 
         }
 
@@ -92,18 +109,54 @@ public class ProblemSolutions {
 
     private void mergeDivisbleByKFirst(int arr[], int k, int left, int mid, int right)
     {
-        // YOUR CODE GOES HERE, THIS METHOD IS NO MORE THAN THE STANDARD MERGE PORTION
-        // OF A MERGESORT, EXCEPT THE NUMBERS DIVISIBLE BY K MUST GO FIRST WITHIN THE
-        // SEQUENCE PER THE DISCUSSION IN THE PROLOGUE ABOVE.
-        //
-        // NOTE: YOU CAN PROGRAM THIS WITH A SPACE COMPLEXITY OF O(1) OR O(N LOG N).
-        // AGAIN, THIS IS REFERRING TO SPACE COMPLEXITY. O(1) IS IN-PLACE, O(N LOG N)
-        // ALLOCATES AUXILIARY DATA STRUCTURES (TEMPORARY ARRAYS). IT WILL BE EASIER
-        // TO CODE WITH A SPACE COMPLEXITY OF O(N LOG N), WHICH IS FINE FOR PURPOSES
-        // OF THIS PROGRAMMING EXERCISES.
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
 
-        return;
+        int[] L = new int[n1];
+        int[] R = new int[n2];
 
+        for (int i = 0; i < n1; ++i)
+            L[i] = arr[left + i];
+        for (int j = 0; j < n2; ++j)
+            R[j] = arr[mid + 1 + j];
+
+        int i = 0;
+        int j = 0;
+        int m = left;
+        while (i < n1 && j < n2) {
+            if (L[i] % k == 0 && R[j] % k != 0) {
+                arr[m] = L[i];
+                i++;
+            } else if (L[i] % k != 0 && R[j] % k == 0) {
+                arr[m] = R[j];
+                j++;
+            } else if (L[i] % k == 0 && R[j] % k == 0) {
+                arr[m] = L[i];
+                i++;
+            }
+            else {
+                if (L[i] <= R[j]) {
+                    arr[m] = L[i];
+                    i++;
+                } else {
+                    arr[m] = R[j];
+                    j++;
+                }
+            }
+            m++;
+        }
+
+        while (i < n1) {
+            arr[m] = L[i];
+            i++;
+            m++;
+        }
+
+        while (j < n2) {
+            arr[m] = R[j];
+            j++;
+            m++;
+        }
     }
 
 
@@ -153,10 +206,16 @@ public class ProblemSolutions {
      */
 
     public static boolean asteroidsDestroyed(int mass, int[] asteroids) {
+        Arrays.sort(asteroids);
+        for (int asteroid : asteroids) {
+            if (mass >= asteroid) {
+                mass += asteroid;
+            } else {
+                return false;
+            }
+        }
 
-        // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT()
-
-        return false;
+        return true;
 
     }
 
@@ -191,10 +250,21 @@ public class ProblemSolutions {
      */
 
     public static int numRescueSleds(int[] people, int limit) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int weight : people) {
+            pq.offer(weight);
+        }
 
-        // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT
+        int sledCount = 0;
+        while (!pq.isEmpty()) {
+            int lightest = pq.poll();
+            sledCount++;
+            if (!pq.isEmpty() && lightest + pq.peek() <= limit) {
+                pq.poll();
+            }
+        }
 
-        return -1;
+        return sledCount;
 
     }
 
